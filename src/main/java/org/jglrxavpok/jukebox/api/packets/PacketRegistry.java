@@ -20,7 +20,9 @@ public class PacketRegistry
         packets.put(EnumJukeboxEnd.CLIENT, new HashMap<Integer, Class<? extends IPacket>>());
         packets.put(EnumJukeboxEnd.PLAYER, new HashMap<Integer, Class<? extends IPacket>>());
 
-        registerPacket(EnumJukeboxEnd.CLIENT, 0, C0Test.class);
+        registerPacket(EnumJukeboxEnd.CLIENT, 0, C0Ping.class);
+
+        registerPacket(EnumJukeboxEnd.PLAYER, 0, P0Infos.class);
     }
 
     public static int getPacketId(Class<? extends IPacket> packet)

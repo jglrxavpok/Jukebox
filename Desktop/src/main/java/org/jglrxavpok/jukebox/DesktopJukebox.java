@@ -88,7 +88,6 @@ public class DesktopJukebox implements IJukebox, Runnable
                         }
                     }).option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-
             // Bind and start to accept incoming connections.
             ChannelFuture f = b.bind(SOCKET_PORT).addListener(new GenericFutureListener<Future<? super Void>>()
             {
