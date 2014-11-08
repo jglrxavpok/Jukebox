@@ -2,12 +2,17 @@ package org.jglrxavpok.jukebox.network;
 
 import io.netty.channel.*;
 
+import org.jglrxavpok.jukebox.*;
+
 public class NettyChannelHandler extends ChannelHandler
 {
 
-    public NettyChannelHandler()
+    private DesktopJukebox jukebox;
+
+    public NettyChannelHandler(DesktopJukebox desktopJukebox)
     {
-        super(new ServerNetHandler());
+        super(new ServerNetHandler(desktopJukebox));
+        this.jukebox = desktopJukebox;
     }
 
     @Override

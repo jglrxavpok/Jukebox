@@ -11,8 +11,13 @@
          to display to the user for the overall application, and provides
          a default label for all following components.  The syntax here is a
          reference to one of our string resources.-->
-    <application android:label="AndroidJukebox">
-
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-sdk android:targetSdkVersion="10" android:minSdkVersion="10"/>
+    <application 
+        android:allowBackup="true"
+        android:label="AndroidJukebox" 
+        android:icon="@drawable/default_icon">
         <!-- An Activity in the application - this is something the user
              can launch and interact with.  The "name" attribute is the
              name of the class within your package that implements this
@@ -35,7 +40,5 @@
         </activity>
 
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
 </manifest>

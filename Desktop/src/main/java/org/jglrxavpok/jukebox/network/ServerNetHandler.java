@@ -3,11 +3,20 @@ package org.jglrxavpok.jukebox.network;
 import io.netty.channel.*;
 
 import java.io.*;
+import java.util.*;
 
+import org.jglrxavpok.jukebox.*;
 import org.jglrxavpok.jukebox.api.packets.*;
 
 public class ServerNetHandler implements INetworkHandler
 {
+
+    private DesktopJukebox jukebox;
+
+    public ServerNetHandler(DesktopJukebox desktopJukebox)
+    {
+        this.jukebox = desktopJukebox;
+    }
 
     @Override
     public void handlePacket(ChannelHandlerContext ctx, IPacket packet)
@@ -16,7 +25,7 @@ public class ServerNetHandler implements INetworkHandler
         {
             try
             {
-                ChannelHelper.writeAndFlush(new P0Infos("TEST-PLAYER"), ctx);
+                ChannelHelper.writeAndFlush(new P0Infos(jukebox.getName(), Base64.getEncoder().encodeToString(jukebox.getImageData())), ctx);
             }
             catch(IOException e)
             {

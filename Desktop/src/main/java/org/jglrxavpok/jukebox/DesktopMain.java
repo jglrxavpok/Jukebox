@@ -16,6 +16,6 @@ public class DesktopMain
         {
             e.printStackTrace();
         }
-        new DesktopJukebox();
+        new DesktopJukebox(JOptionPane.showInputDialog("Please enter server name"));
     }
 }

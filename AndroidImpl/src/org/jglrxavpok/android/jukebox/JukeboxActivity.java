@@ -1,7 +1,5 @@
 package org.jglrxavpok.android.jukebox;
 
-import java.util.*;
-
 import android.app.*;
 import android.os.*;
 import android.view.*;
@@ -9,35 +7,18 @@ import android.view.*;
 public class JukeboxActivity extends Activity
 {
 
-    public static final String     TAG = JukeboxActivity.class.getSimpleName();
-    private AndroidJukebox         jukebox;
-    public static JukeboxActivity  instance;
-    private ArrayList<JukeboxHost> hosts;
-    private JukeboxHost            currentHost;
+    public static final String    TAG = "Android Jukebox";
+    private AndroidJukeboxClient  jukebox;
+    private MainPanel             mainPanel;
+    public static JukeboxActivity instance;
 
     public JukeboxActivity()
     {
-        hosts = new ArrayList<JukeboxHost>();
         instance = this;
-        jukebox = new AndroidJukebox();
+        jukebox = new AndroidJukeboxClient();
     }
 
-    public ArrayList<JukeboxHost> getHosts()
-    {
-        return hosts;
-    }
-
-    public void setJukeboxHost(JukeboxHost host)
-    {
-        this.currentHost = host;
-    }
-
-    public JukeboxHost getCurrentHost()
-    {
-        return currentHost;
-    }
-
-    public AndroidJukebox getJukebox()
+    public AndroidJukeboxClient getJukebox()
     {
         return jukebox;
     }
@@ -47,7 +28,13 @@ public class JukeboxActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(new MainPanel(this));
+        mainPanel = new MainPanel(this);
+        setContentView(mainPanel);
+    }
+
+    public MainPanel getMainPanel()
+    {
+        return mainPanel;
     }
 
     /**

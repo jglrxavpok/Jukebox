@@ -8,7 +8,11 @@ import io.netty.channel.socket.nio.*;
 import io.netty.util.concurrent.*;
 
 import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import java.nio.*;
 
+import javax.imageio.*;
 import javax.swing.*;
 
 import org.jglrxavpok.jukebox.api.*;
@@ -18,14 +22,17 @@ import org.jglrxavpok.jukebox.network.*;
 public class DesktopJukebox implements IJukebox, Runnable
 {
 
-    private JFrame    frame;
-    protected boolean running;
-    private Channel   serverChannel;
+    private JFrame        frame;
+    protected boolean     running;
+    private Channel       serverChannel;
+    private String        name;
+    private BufferedImage icon;
 
-    public DesktopJukebox()
+    public DesktopJukebox(String name)
     {
+        this.name = name;
         running = true;
-        frame = new JFrame("Jukebox");
+        frame = new JFrame("Jukebox - " + name);
         JLabel tmp = new JLabel("TMP");
         frame.add(tmp);
         frame.pack();
@@ -40,6 +47,15 @@ public class DesktopJukebox implements IJukebox, Runnable
         PacketRegistry.init();
         new Thread(this, "Netty wrapper thread").start();
         frame.setVisible(true);
+
+        try
+        {
+            icon = ImageIO.read(getClass().getResource("/assets/icons/default_icon.png"));
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     protected void shutdown()
@@ -84,7 +100,7 @@ public class DesktopJukebox implements IJukebox, Runnable
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception
                         {
-                            ch.pipeline().addLast(new PacketDecoder()).addLast(new PacketEncoder()).addLast(new NettyChannelHandler());
+                            ch.pipeline().addLast(new PacketDecoder()).addLast(new PacketEncoder()).addLast(new NettyChannelHandler(DesktopJukebox.this));
                         }
                     }).option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -109,6 +125,30 @@ public class DesktopJukebox implements IJukebox, Runnable
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public byte[] getImageData()
+    {
+        ByteBuffer buffer = ByteBuffer.allocate(icon.getWidth() * icon.getHeight() * 4);
+        int[] pixels = icon.getRGB(0, 0, icon.getWidth(), icon.getHeight(), null, 0, icon.getWidth());
+        for(int color : pixels)
+        {
+            int alpha = color >> 24 & 0xFF;
+            int red = color >> 16 & 0xFF;
+            int green = color >> 8 & 0xFF;
+            int blue = color & 0xFF;
+            buffer.put((byte) alpha);
+            buffer.put((byte) red);
+            buffer.put((byte) green);
+            buffer.put((byte) blue);
+        }
+        buffer.flip();
+        return buffer.array();
     }
 
 }
