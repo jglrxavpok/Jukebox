@@ -6,7 +6,6 @@ import org.jglrxavpok.jukebox.api.packets.*;
 
 public interface INetworkHandler
 {
-
     void handlePacket(ChannelHandlerContext ctx, IPacket packet);
 
     void onConnexionEstablished(ChannelHandlerContext ctx);
