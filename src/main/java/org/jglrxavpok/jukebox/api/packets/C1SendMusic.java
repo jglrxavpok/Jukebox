@@ -40,4 +40,9 @@ public class C1SendMusic extends IPacket
         writeBytes(output, music.getFileData());
     }
 
+    public Music getMusic()
+    {
+        return music;
+    }
+
 }

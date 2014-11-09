@@ -31,8 +31,39 @@ public class MainPanel extends LinearLayout
                 jukeboxNameView.setText(host.getName());
                 ImageView jukeboxIconView = (ImageView) JukeboxActivity.instance.findViewById(R.id.jukeboxicon);
                 jukeboxIconView.setImageBitmap(host.getIcon());
+
+                Button button = (Button) JukeboxActivity.instance.findViewById(R.id.uploadButton);
+                button.setOnClickListener(new OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(View v)
+                    {
+                        showFileChooser();
+                    }
+                });
             }
         });
+    }
+
+    private void showFileChooser()
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        try
+        {
+            JukeboxActivity.instance.startActivityForResult(
+                    Intent.createChooser(intent, "Select a File to Upload"),
+                    JukeboxActivity.CHOOSE_FILE_ACTIVITY);
+        }
+        catch(android.content.ActivityNotFoundException ex)
+        {
+            // Potentially direct the user to the Market with a Dialog
+            Toast.makeText(JukeboxActivity.instance, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void addJukeboxHost(JukeboxHost host)

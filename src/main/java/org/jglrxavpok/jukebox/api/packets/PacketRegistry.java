@@ -21,6 +21,7 @@ public class PacketRegistry
         packets.put(EnumJukeboxEnd.PLAYER, new HashMap<Integer, Class<? extends IPacket>>());
 
         registerPacket(EnumJukeboxEnd.CLIENT, 0, C0Ping.class);
+        registerPacket(EnumJukeboxEnd.CLIENT, 1, C1SendMusic.class);
 
         registerPacket(EnumJukeboxEnd.PLAYER, 0, P0Infos.class);
     }

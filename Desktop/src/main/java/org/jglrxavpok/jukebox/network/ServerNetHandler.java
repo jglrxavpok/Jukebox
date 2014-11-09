@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 
 import org.jglrxavpok.jukebox.*;
+import org.jglrxavpok.jukebox.api.music.*;
 import org.jglrxavpok.jukebox.api.packets.*;
 
 public class ServerNetHandler implements INetworkHandler
@@ -31,6 +32,12 @@ public class ServerNetHandler implements INetworkHandler
             {
                 e.printStackTrace();
             }
+        }
+        else if(packet instanceof C1SendMusic)
+        {
+            C1SendMusic musicPacket = (C1SendMusic) packet;
+            Music music = musicPacket.getMusic();
+            jukebox.play(music);
         }
     }
 

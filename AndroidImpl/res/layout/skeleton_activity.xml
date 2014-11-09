@@ -65,13 +65,10 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/listView1"
+    <Button
+        android:id="@+id/uploadButton"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        tools:listheader="@android:layout/simple_list_item_1"
-        tools:listitem="@android:layout/simple_list_item_single_choice" >
-
-    </ListView>
+        android:layout_height="fill_parent"
+        android:text="Upload..." />
 
 </LinearLayout>

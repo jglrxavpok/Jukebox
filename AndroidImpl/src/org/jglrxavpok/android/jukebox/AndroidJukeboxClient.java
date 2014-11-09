@@ -8,6 +8,7 @@ import android.graphics.*;
 
 import org.jglrxavpok.android.jukebox.utils.*;
 import org.jglrxavpok.jukebox.api.*;
+import org.jglrxavpok.jukebox.api.music.*;
 import org.jglrxavpok.jukebox.api.packets.*;
 
 public class AndroidJukeboxClient implements IJukebox
@@ -15,6 +16,7 @@ public class AndroidJukeboxClient implements IJukebox
 
     private ArrayList<JukeboxHost> hosts;
     private JukeboxHost            currentHost;
+    private Socket                 socket;
 
     public AndroidJukeboxClient()
     {
@@ -108,6 +110,24 @@ public class AndroidJukeboxClient implements IJukebox
                 }
             }
         }.start();
+    }
+
+    public void sendMusic(Music music)
+    {
+        if(currentHost == null)
+            throw new IllegalStateException("Tried to send music file while not connected");
+        try
+        {
+            if(socket == null)
+            {
+                socket = new Socket(currentHost.getAddress(), SOCKET_PORT);
+            }
+            Packets.encode(new C1SendMusic(music), socket.getOutputStream());
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 }

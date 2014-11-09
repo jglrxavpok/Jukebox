@@ -14,27 +14,52 @@ import java.nio.*;
 
 import javax.imageio.*;
 import javax.swing.*;
+import javax.swing.event.*;
+
+import javazoom.jl.decoder.*;
+import javazoom.jl.player.*;
+import javazoom.jl.player.advanced.*;
 
 import org.jglrxavpok.jukebox.api.*;
+import org.jglrxavpok.jukebox.api.music.*;
 import org.jglrxavpok.jukebox.api.packets.*;
 import org.jglrxavpok.jukebox.network.*;
 
 public class DesktopJukebox implements IJukebox, Runnable
 {
 
-    private JFrame        frame;
-    protected boolean     running;
-    private Channel       serverChannel;
-    private String        name;
-    private BufferedImage icon;
+    private JFrame                 frame;
+    protected boolean              running;
+    private Channel                serverChannel;
+    private String                 name;
+    private BufferedImage          icon;
+    private float                  volume;
+    private JLabel                 playingLabel;
+    protected JavaSoundAudioDevice device;
+    protected AdvancedPlayer       player;
 
     public DesktopJukebox(String name)
     {
+        this.volume = 0.05f;
         this.name = name;
         running = true;
         frame = new JFrame("Jukebox - " + name);
-        JLabel tmp = new JLabel("TMP");
-        frame.add(tmp);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        final JSlider volumeSlider = new JSlider(0, 100, (int) (volume * 100f));
+        volumeSlider.addChangeListener(new ChangeListener()
+        {
+
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                setVolume((float) volumeSlider.getValue() / 100f);
+            }
+        });
+        panel.add(volumeSlider);
+        playingLabel = new JLabel("No music playing");
+        panel.add(playingLabel);
+        frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.addWindowListener(new WindowAdapter()
@@ -55,6 +80,18 @@ public class DesktopJukebox implements IJukebox, Runnable
         catch(IOException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    protected void setVolume(float f)
+    {
+        volume = f;
+        System.out.println("new volume: " + f);
+        if(device != null)
+        {
+            player.pause();
+            device.setLineGain(volume);
+            player.resume();
         }
     }
 
@@ -149,6 +186,37 @@ public class DesktopJukebox implements IJukebox, Runnable
         }
         buffer.flip();
         return buffer.array();
+    }
+
+    public void play(final Music music)
+    {
+        playingLabel.setText("<html>Now playing: <u>" + music.getInfos().getTitle() + "</u></html>");
+        frame.pack();
+        switch(music.getInfos().getFormat())
+        {
+            case MP3:
+                new Thread()
+                {
+
+                    public void run()
+                    {
+                        try
+                        {
+                            device = (JavaSoundAudioDevice) new JavaSoundAudioDeviceFactory().createAudioDevice();
+                            player = new AdvancedPlayer(new ByteArrayInputStream(music.getFileData()), device);
+                            device.setLineGain(volume);
+                            player.play();
+                        }
+                        catch(JavaLayerException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
+                break;
+            default:
+                throw new IllegalArgumentException("Other types than MP3 are not supported yet");
+        }
     }
 
 }
