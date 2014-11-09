@@ -69,38 +69,12 @@ public class AndroidJukeboxClient implements IJukebox
                                 s.setSoTimeout(1000);
                                 InetAddress address = InetAddress.getByName(n);
                                 s.connect(new InetSocketAddress(address, IJukebox.SOCKET_PORT));
-                                s.setKeepAlive(false);
-                                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                                DataOutputStream out = new DataOutputStream(output);
-                                C0Ping test = new C0Ping();
-                                test.encodeInto(out);
-                                out.flush();
-                                out.close();
-                                byte[] bytes = output.toByteArray();
-                                out = new DataOutputStream(s.getOutputStream());
-                                out.writeInt(0);
-                                out.writeInt(EnumJukeboxEnd.CLIENT.ordinal());
-                                out.writeInt(bytes.length);
-                                out.write(bytes);
-                                out.flush();
-                                DataInputStream in = new DataInputStream(s.getInputStream());
-                                int id = in.readInt();
-                                int type = in.readInt();
-                                int payloadSize = in.readInt();
-                                byte[] payload = new byte[payloadSize];
-                                in.readFully(payload);
-                                IPacket packet = PacketRegistry.create(EnumJukeboxEnd.values()[type], id);
-                                if(packet instanceof P0Infos)
-                                {
-                                    DataInputStream input = new DataInputStream(new ByteArrayInputStream(payload));
-                                    packet.decodeFrom(input);
-                                    input.close();
-                                }
-                                else
+                                Packets.encode(new C0Ping(), s.getOutputStream());
+                                IPacket packet = Packets.decode(s.getInputStream());
+                                if(!(packet instanceof P0Infos))
                                 {
                                     throw new IllegalArgumentException("Received packet at launch was not a packet containing informations about the jukebox host");
                                 }
-                                out.close();
                                 s.close();
                                 addJukeboxHost(new JukeboxHost(((P0Infos) packet).getPlayerName(), convertToBitmap(((P0Infos) packet).getImageDataAsBase64()), address));
                             }

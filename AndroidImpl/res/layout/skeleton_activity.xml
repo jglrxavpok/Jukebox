@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2007 The Android Open Source Project
+<!--
+     Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,60 +15,63 @@
      limitations under the License.
 -->
 
-<!-- This file describes the layout of the main SkeletonApp activity
+
+<!--
+     This file describes the layout of the main SkeletonApp activity
      user interface.
- -->
+-->
 
-<!-- The top view is a layout manager that places its child views into
-     a row, here set to be vertical (so the first is at the top) -->
 
+<!--
+     The top view is a layout manager that places its child views into
+     a row, here set to be vertical (so the first is at the top)
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/jukebox"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <!-- First view is a text editor.  We want it to use all available
+    <!--
+         First view is a text editor.  We want it to use all available
          horizontal space, and stretch to fill whatever vertical space
          is available to it.  Note the use of the "id" attribute, which
-         allows us to find this object from the Java code. -->
-    <EditText android:id="@+id/editor"
-        android:layout_width="fill_parent" android:layout_height="0dip"
-        android:autoText="true"
-        android:capitalize="sentences"
-        android:layout_weight="1"
-        android:freezesText="true" >
-        <requestFocus />
-    </EditText>
+         allows us to find this object from the Java code.
+    -->
 
-    <!-- Next view is another linear layout manager, now horizontal.  We
+
+    <!--
+         Next view is another linear layout manager, now horizontal.  We
          give it a custom background; see colors.xml for the definition
-         of drawable/semi_black-->
+         of drawable/semi_black
+    -->
+
     <LinearLayout
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:background="@drawable/semi_black">
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-        <!-- On the left: the "back" button.  See styles.xml for the
-             definition of style/ActionButton, which we use to hold
-             common attributes that are used for both this and the
-             clear button.  See strings.xml for the definition of
-             string/back. -->
-        <Button android:id="@+id/back" style="@style/ActionButton"
-            android:text="@string/back" />
+        <ImageView
+            android:id="@+id/jukeboxicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/default_icon" />
 
-        <!-- In the middle: a custom image, -->
-        <ImageView android:id="@+id/image"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:paddingLeft="4dip" android_paddingRight="4dip"
-            android:src="@drawable/violet" />
-
-        <!-- On the right: another button, this time with its text color
-             changed to red.  Again, see colors.xml for the definition. -->
-        <Button android:id="@+id/clear" style="@style/ActionButton"
-            android:text="@string/clear" android:textColor="@color/red" />
-
+        <TextView
+            android:id="@+id/jukeboxname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Jukebox name"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        tools:listheader="@android:layout/simple_list_item_1"
+        tools:listitem="@android:layout/simple_list_item_single_choice" >
+
+    </ListView>
+
 </LinearLayout>
-
-

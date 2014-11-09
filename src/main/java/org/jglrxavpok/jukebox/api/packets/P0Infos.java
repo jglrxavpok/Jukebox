@@ -2,7 +2,7 @@ package org.jglrxavpok.jukebox.api.packets;
 
 import java.io.*;
 
-public class P0Infos implements IPacket
+public class P0Infos extends IPacket
 {
 
     private String playerName;

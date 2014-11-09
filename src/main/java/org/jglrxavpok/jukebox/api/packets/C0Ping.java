@@ -2,7 +2,7 @@ package org.jglrxavpok.jukebox.api.packets;
 
 import java.io.*;
 
-public class C0Ping implements IPacket
+public class C0Ping extends IPacket
 {
 
     @Override
