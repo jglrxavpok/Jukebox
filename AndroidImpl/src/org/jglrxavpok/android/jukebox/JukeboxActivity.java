@@ -57,6 +57,7 @@ public class JukeboxActivity extends Activity
                         out.flush();
                         out.close();
                         in.close();
+
                         jukebox.sendMusic(new Music(out.toByteArray(), new MusicInfos(file.getName(), MusicFormat.MP3))); // TODO: allow other formats
                         // TODO
                     }

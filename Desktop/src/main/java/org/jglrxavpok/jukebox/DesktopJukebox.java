@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 import javax.imageio.*;
@@ -45,9 +46,11 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
     private Music                      currentMusic;
     private Music                      music;
     private DefaultListModel<Music>    musicListModel;
+    private ArrayList<Channel>         connected;
 
     public DesktopJukebox(String name)
     {
+        connected = new ArrayList<Channel>();
         musicQueue = new LinkedBlockingQueue<Music>();
         this.volume = 0.05f;
         this.name = name;
@@ -90,6 +93,7 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
         try
         {
             icon = ImageIO.read(getClass().getResource("/assets/icons/default_icon.png"));
+            frame.setIconImage(icon);
         }
         catch(IOException e)
         {
@@ -286,11 +290,34 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
     private void updateMusicList()
     {
         musicListModel.clear();
+        ArrayList<MusicInfos> musicInfos = new ArrayList<MusicInfos>();
         for(Music music : musicQueue)
         {
+            musicInfos.add(music.getInfos());
             musicListModel.addElement(music);
         }
+        sendToAll(new P1UpdateList(musicInfos));
         System.out.println("Updated list!");
+    }
+
+    public void onConnection(Channel channel)
+    {
+        connected.add(channel);
+    }
+
+    public void sendToAll(IPacket packet)
+    {
+        for(Channel c : connected)
+        {
+            try
+            {
+                ChannelHelper.writeAndFlush(packet, c);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

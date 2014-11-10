@@ -19,7 +19,7 @@ public class NettyChannelHandler extends ChannelHandler
     public void channelActive(final ChannelHandlerContext ctx)
     {
         System.out.println("new client");
-        // TODO ChannelHelper.writeAndFlush(new S0ConnectionAccepted(), ctx);
+        jukebox.onConnection(ctx.channel());
     }
 
     @Override

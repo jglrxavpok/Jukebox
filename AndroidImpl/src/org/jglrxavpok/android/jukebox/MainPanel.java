@@ -1,9 +1,13 @@
 package org.jglrxavpok.android.jukebox;
 
+import java.util.*;
+
 import android.content.*;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
+
+import org.jglrxavpok.jukebox.api.music.*;
 
 public class MainPanel extends LinearLayout
 {
@@ -26,11 +30,15 @@ public class MainPanel extends LinearLayout
             {
                 JukeboxHost host = JukeboxActivity.instance.getJukebox().getHosts().get(index);
                 JukeboxActivity.instance.getJukebox().setJukeboxHost(host);
-                JukeboxActivity.instance.setContentView(R.layout.skeleton_activity);
+                JukeboxActivity.instance.setContentView(R.layout.jukebox);
                 TextView jukeboxNameView = (TextView) JukeboxActivity.instance.findViewById(R.id.jukeboxname);
                 jukeboxNameView.setText(host.getName());
                 ImageView jukeboxIconView = (ImageView) JukeboxActivity.instance.findViewById(R.id.jukeboxicon);
                 jukeboxIconView.setImageBitmap(host.getIcon());
+
+                ListView jukeboxPlayList = (ListView) JukeboxActivity.instance.findViewById(R.id.jukeboxPlaylist);
+                JukeboxPlaylistAdapter adapter = new JukeboxPlaylistAdapter(getContext(), new ArrayList<MusicInfos>());
+                jukeboxPlayList.setAdapter(adapter);
 
                 Button button = (Button) JukeboxActivity.instance.findViewById(R.id.uploadButton);
                 button.setOnClickListener(new OnClickListener()

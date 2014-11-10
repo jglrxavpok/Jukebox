@@ -15,6 +15,7 @@ public class JukeboxSelectView extends LinearLayout
         imageView.setImageBitmap(host.getIcon());
         addView(imageView);
         TextView titleView = new TextView(context);
+        titleView.setTextSize(24f);
         titleView.setText(host.getName());
         addView(titleView);
     }

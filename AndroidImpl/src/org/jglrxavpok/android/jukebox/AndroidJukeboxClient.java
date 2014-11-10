@@ -120,6 +120,7 @@ public class AndroidJukeboxClient implements IJukebox
             if(socket == null)
             {
                 socket = new Socket(currentHost.getAddress(), SOCKET_PORT);
+                new ThreadCheckServer(socket).start();
             }
             Packets.encode(new C1SendMusic(music), socket.getOutputStream());
         }
