@@ -6,11 +6,14 @@ import io.netty.channel.nio.*;
 import io.netty.channel.socket.*;
 import io.netty.channel.socket.nio.*;
 import io.netty.util.concurrent.*;
+import io.netty.util.concurrent.Future;
 
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.*;
+import java.util.concurrent.*;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -25,21 +28,27 @@ import org.jglrxavpok.jukebox.api.music.*;
 import org.jglrxavpok.jukebox.api.packets.*;
 import org.jglrxavpok.jukebox.network.*;
 
-public class DesktopJukebox implements IJukebox, Runnable
+public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
 {
 
-    private JFrame                 frame;
-    protected boolean              running;
-    private Channel                serverChannel;
-    private String                 name;
-    private BufferedImage          icon;
-    private float                  volume;
-    private JLabel                 playingLabel;
-    protected JavaSoundAudioDevice device;
-    protected AdvancedPlayer       player;
+    private JFrame                     frame;
+    protected boolean                  running;
+    private Channel                    serverChannel;
+    private String                     name;
+    private BufferedImage              icon;
+    private float                      volume;
+    private JLabel                     playingLabel;
+    protected JavaSoundAudioDevice     device;
+    protected AdvancedPlayer           player;
+    private LinkedBlockingQueue<Music> musicQueue;
+    private JList<Music>               musicListComp;
+    private Music                      currentMusic;
+    private Music                      music;
+    private DefaultListModel<Music>    musicListModel;
 
     public DesktopJukebox(String name)
     {
+        musicQueue = new LinkedBlockingQueue<Music>();
         this.volume = 0.05f;
         this.name = name;
         running = true;
@@ -56,9 +65,14 @@ public class DesktopJukebox implements IJukebox, Runnable
                 setVolume((float) volumeSlider.getValue() / 100f);
             }
         });
-        panel.add(volumeSlider);
+        addSection("Volume", volumeSlider, panel);
         playingLabel = new JLabel("No music playing");
-        panel.add(playingLabel);
+        addSection(null, playingLabel, panel);
+        musicListModel = new DefaultListModel<Music>();
+        musicListComp = new JList<Music>(musicListModel);
+        musicListComp.setCellRenderer(new MusicCellRenderer<Music>());
+        JScrollPane listView = new JScrollPane(musicListComp);
+        addSection("Music queue", listView, panel);
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -81,6 +95,16 @@ public class DesktopJukebox implements IJukebox, Runnable
         {
             e.printStackTrace();
         }
+    }
+
+    private void addSection(String title, Component component, JPanel container)
+    {
+        JPanel panel = new JPanel();
+        if(title != null)
+            panel.add(new JLabel(title));
+        panel.add(component);
+
+        container.add(panel);
     }
 
     protected void setVolume(float f)
@@ -188,8 +212,30 @@ public class DesktopJukebox implements IJukebox, Runnable
         return buffer.array();
     }
 
+    public void addToQueue(final Music music)
+    {
+        if(currentMusic == null)
+        {
+            play(music);
+        }
+        else
+            musicQueue.add(music);
+        updateMusicList();
+    }
+
+    public void setCurrentMusic(Music music)
+    {
+        this.music = music;
+    }
+
+    public Music getCurrentMusic()
+    {
+        return music;
+    }
+
     public void play(final Music music)
     {
+        currentMusic = music;
         playingLabel.setText("<html>Now playing: <u>" + music.getInfos().getTitle() + "</u></html>");
         frame.pack();
         switch(music.getInfos().getFormat())
@@ -205,6 +251,7 @@ public class DesktopJukebox implements IJukebox, Runnable
                             device = (JavaSoundAudioDevice) new JavaSoundAudioDeviceFactory().createAudioDevice();
                             player = new AdvancedPlayer(new ByteArrayInputStream(music.getFileData()), device);
                             device.setLineGain(volume);
+                            player.setPlayBackListener(new JLayerListener(DesktopJukebox.this, music));
                             player.play();
                         }
                         catch(JavaLayerException e)
@@ -217,6 +264,33 @@ public class DesktopJukebox implements IJukebox, Runnable
             default:
                 throw new IllegalArgumentException("Other types than MP3 are not supported yet");
         }
+    }
+
+    @Override
+    public void playNextInQueue()
+    {
+        currentMusic = null;
+        if(!musicQueue.isEmpty())
+        {
+            play(pollMusic());
+        }
+    }
+
+    private Music pollMusic()
+    {
+        Music m = musicQueue.poll();
+        updateMusicList();
+        return m;
+    }
+
+    private void updateMusicList()
+    {
+        musicListModel.clear();
+        for(Music music : musicQueue)
+        {
+            musicListModel.addElement(music);
+        }
+        System.out.println("Updated list!");
     }
 
 }

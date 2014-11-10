@@ -3,7 +3,6 @@ package org.jglrxavpok.jukebox.network;
 import io.netty.channel.*;
 
 import java.io.*;
-import java.util.*;
 
 import org.jglrxavpok.jukebox.*;
 import org.jglrxavpok.jukebox.api.music.*;
@@ -26,7 +25,7 @@ public class ServerNetHandler implements INetworkHandler
         {
             try
             {
-                ChannelHelper.writeAndFlush(new P0Infos(jukebox.getName(), Base64.getEncoder().encodeToString(jukebox.getImageData())), ctx);
+                ChannelHelper.writeAndFlush(new P0Infos(jukebox.getName(), jukebox.getImageData()), ctx);
             }
             catch(IOException e)
             {
@@ -37,7 +36,7 @@ public class ServerNetHandler implements INetworkHandler
         {
             C1SendMusic musicPacket = (C1SendMusic) packet;
             Music music = musicPacket.getMusic();
-            jukebox.play(music);
+            jukebox.addToQueue(music);
         }
     }
 

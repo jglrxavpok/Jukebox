@@ -78,7 +78,7 @@ public class AndroidJukeboxClient implements IJukebox
                                     throw new IllegalArgumentException("Received packet at launch was not a packet containing informations about the jukebox host");
                                 }
                                 s.close();
-                                addJukeboxHost(new JukeboxHost(((P0Infos) packet).getPlayerName(), convertToBitmap(((P0Infos) packet).getImageDataAsBase64()), address));
+                                addJukeboxHost(new JukeboxHost(((P0Infos) packet).getPlayerName(), convertToBitmap(((P0Infos) packet).getImageData()), address));
                             }
                             catch(Exception e)
                             {
@@ -87,9 +87,8 @@ public class AndroidJukeboxClient implements IJukebox
                             }
                         }
 
-                        private Bitmap convertToBitmap(String base64image)
+                        private Bitmap convertToBitmap(byte[] imageData)
                         {
-                            byte[] imageData = Base64Coder.decode(base64image);
                             Bitmap bitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
                             for(int x = 0; x < bitmap.getWidth(); x++ )
                             {
