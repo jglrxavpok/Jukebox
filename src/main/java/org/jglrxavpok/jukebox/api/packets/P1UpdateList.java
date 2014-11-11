@@ -28,8 +28,10 @@ public class P1UpdateList extends IPacket
         {
             String title = input.readUTF();
             String author = input.readUTF();
+            String album = input.readUTF();
+            String year = input.readUTF();
             MusicFormat format = MusicFormat.valueOf(input.readUTF());
-            musics.add(new MusicInfos(title, author, format));
+            musics.add(new MusicInfos(title, author, album, year, format));
         }
     }
 
@@ -41,6 +43,8 @@ public class P1UpdateList extends IPacket
         {
             output.writeUTF(infos.getTitle());
             output.writeUTF(infos.getAuthor());
+            output.writeUTF(infos.getAlbum());
+            output.writeUTF(infos.getYear());
             output.writeUTF(infos.getFormat().name());
         }
     }

@@ -58,7 +58,9 @@ public class JukeboxActivity extends Activity
                         out.close();
                         in.close();
 
-                        jukebox.sendMusic(new Music(out.toByteArray(), new MusicInfos(file.getName(), MusicFormat.MP3))); // TODO: allow other formats
+                        String[] split = file.getAbsolutePath().split("\\.");
+                        String extension = split[split.length - 1];
+                        jukebox.sendMusic(new Music(out.toByteArray(), new MusicInfos(file.getName(), MusicFormat.fromExtension(extension))));
                         // TODO
                     }
                     catch(Exception e)

@@ -21,4 +21,9 @@ public class Music
     {
         return fileData;
     }
+
+    public void setInfos(MusicInfos musicInfos)
+    {
+        this.infos = musicInfos;
+    }
 }

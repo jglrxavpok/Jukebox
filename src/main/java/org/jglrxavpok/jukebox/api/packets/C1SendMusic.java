@@ -24,6 +24,8 @@ public class C1SendMusic extends IPacket
     {
         String title = input.readUTF();
         String author = input.readUTF();
+        String album = input.readUTF();
+        String year = input.readUTF();
         MusicFormat format = MusicFormat.valueOf(input.readUTF());
         byte[] fileData = readBytes(input);
         GZIPInputStream compressedInput = new GZIPInputStream(new ByteArrayInputStream(fileData));
@@ -37,7 +39,7 @@ public class C1SendMusic extends IPacket
         uncompressedOutput.flush();
         uncompressedOutput.close();
         compressedInput.close();
-        music = new Music(uncompressedOutput.toByteArray(), new MusicInfos(title, author, format));
+        music = new Music(uncompressedOutput.toByteArray(), new MusicInfos(title, author, album, year, format));
     }
 
     @Override
@@ -45,9 +47,13 @@ public class C1SendMusic extends IPacket
     {
         String title = music.getInfos().getTitle();
         String author = music.getInfos().getAuthor();
+        String album = music.getInfos().getAuthor();
+        String year = music.getInfos().getFormat().name();
         String format = music.getInfos().getFormat().name();
         output.writeUTF(title);
         output.writeUTF(author);
+        output.writeUTF(album);
+        output.writeUTF(year);
         output.writeUTF(format);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

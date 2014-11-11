@@ -47,6 +47,7 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
     private Music                      music;
     private DefaultListModel<Music>    musicListModel;
     private ArrayList<Channel>         connected;
+    private File                       cacheDir;
 
     public DesktopJukebox(String name)
     {
@@ -247,7 +248,6 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
             case MP3:
                 new Thread()
                 {
-
                     public void run()
                     {
                         try
@@ -264,6 +264,9 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
                         }
                     }
                 }.start();
+                break;
+            case OGG:
+                new ThreadPlayVorbis(music, new JLayerListener(this, music)).start();
                 break;
             default:
                 throw new IllegalArgumentException("Other types than MP3 are not supported yet");
@@ -307,6 +310,7 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
 
     public void sendToAll(IPacket packet)
     {
+        ArrayList<Channel> toRemove = new ArrayList<Channel>();
         for(Channel c : connected)
         {
             try
@@ -316,8 +320,21 @@ public class DesktopJukebox implements IJukebox, IJukeboxPlayer, Runnable
             catch(IOException e)
             {
                 e.printStackTrace();
+                toRemove.add(c);
             }
         }
+        connected.removeAll(toRemove);
+    }
+
+    public File getCacheDir()
+    {
+        if(cacheDir == null)
+        {
+            cacheDir = new File(System.getProperty("user.home"), "Jukebox");
+            if(!cacheDir.exists())
+                cacheDir.mkdirs();
+        }
+        return cacheDir;
     }
 
 }
